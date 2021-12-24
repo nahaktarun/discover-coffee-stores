@@ -8,7 +8,7 @@ export function getStaticProps({params}) {
   return{
     props: {
       CoffeeStore: CoffeeStoreData.find(CoffeeStore => {
-        return CoffeeStore.id === 0;
+        return CoffeeStore.id.toString() === params.id;
       })
     }
   }
@@ -23,13 +23,19 @@ export function getStaticPaths () {
       {
         params: {id: "1"}
       }
-    ]
+      ,
+      {
+        params: {id: "300"}
+      }
+    ],
+    fallback: false,
   }
 }
 
-const CoffeeStore = () =>{
+const CoffeeStore = (props) =>{
 
     const router = useRouter();
+    console.log("props:",props);
     return (
       <div>
         Coffee Store page {router.query.id}
@@ -39,6 +45,8 @@ const CoffeeStore = () =>{
         <Link href="/coffee-store/dynamic" >
           <a>Go To dynamic page..</a>
         </Link>
+        <p>{props.CoffeeStore.address}</p>
+        <p>{props.CoffeeStore.name}</p>
       </div>
     );
 }
