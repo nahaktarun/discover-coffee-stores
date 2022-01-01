@@ -6,23 +6,26 @@ import Head from 'next/head';
 import styles from "../../styles/coffee-store.module.css";
 import Image from 'next/image';
 import cls from "classnames";
-export function getStaticProps({params}) {
+import { fetchCoffeeStores } from '../../lib/coffee-stores';
+export async function getStaticProps({params}) {
+  
+  const coffeeStores = await fetchCoffeeStores();
 
   return{
     props: {
-      CoffeeStore: CoffeeStoreData.find(CoffeeStore => {
-        return CoffeeStore.id.toString() === params.id;
+      CoffeeStore: coffeeStores.find(CoffeeStore => {
+        return CoffeeStore.fsq_id.toString() === params.id;
       })
     }
   }
 }
 
-export function getStaticPaths () {
-
-  const paths = CoffeeStoreData.map((CoffeeStore)=>{
+export async function getStaticPaths () {
+const coffeeStores = await fetchCoffeeStores();
+  const paths = coffeeStores.map((CoffeeStore)=>{
     return{
       params:{
-        id: CoffeeStore.id.toString(),
+        id: CoffeeStore.fsq_id.toString(),
       }
     }
   })
@@ -60,7 +63,10 @@ const CoffeeStore = (props) =>{
               <h1 className={styles.name}>{name}</h1>
             </div>
             <Image
-              src={imgUrl}
+              src={
+                imgUrl ||
+                "https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80"
+              }
               width={600}
               height={360}
               alt={name}
@@ -75,8 +81,7 @@ const CoffeeStore = (props) =>{
                 height="24"
                 alt=""
               />
-                <p className={styles.text}>{address}</p>
-             
+              <p className={styles.text}>{address}</p>
             </div>
             <div className={styles.iconWrapper}>
               <Image
@@ -85,13 +90,16 @@ const CoffeeStore = (props) =>{
                 height="24"
                 alt=""
               />
-                <p className={styles.text}>{neighbourhood}</p>
-             
+              <p className={styles.text}>{neighbourhood}</p>
             </div>
             <div className={styles.iconWrapper}>
-              <Image src="/static/icons/star.svg" width="24" height="24" alt=""/>
-                <p className={styles.text}>1</p>
-             
+              <Image
+                src="/static/icons/star.svg"
+                width="24"
+                height="24"
+                alt=""
+              />
+              <p className={styles.text}>1</p>
             </div>
             <button
               className={styles.upvoteButton}
