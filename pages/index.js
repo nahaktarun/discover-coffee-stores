@@ -2,6 +2,7 @@ import Head from 'next/head'
 import Image from 'next/image'
 import Banner from '../components/banner'
 import Card from '../components/card'
+import useTrackLocation from '../hooks/use-track-location'
 import { fetchCoffeeStores } from '../lib/coffee-stores'
 import styles from '../styles/Home.module.css'
 // import coffeeStoresData from '../data/coffee-store.json';
@@ -19,9 +20,12 @@ return {
 }
 export default function Home(props) {
   console.log(props);
-
+  const {handleTrackLocation, latLong, locationErrorMsg, isFindingLocation}  = useTrackLocation();
+  
+  console.log({latLong});
+  console.log({locationErrorMsg});
   const handleOnBannerBtnClick = () =>{
-    console.log("Button clicked");
+    handleTrackLocation();
   }
   return (
     <div className={styles.container}>
@@ -33,9 +37,11 @@ export default function Home(props) {
 
       <main className={styles.main}>
         <Banner
-          buttonText="View stores nearby"
+          buttonText={isFindingLocation ? "Locating..." : "View stores nearby"}
           handleOnClick={handleOnBannerBtnClick}
         />
+        
+        {/* Something went wrong : {locationErrorMsg} */}
         <div className={styles.heroImage}>
           <Image
             src="/static/hero-image.png"
