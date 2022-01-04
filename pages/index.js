@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import Image from 'next/image'
+import { useEffect } from 'react'
 import Banner from '../components/banner'
 import Card from '../components/card'
 import useTrackLocation from '../hooks/use-track-location'
@@ -9,7 +10,7 @@ import styles from '../styles/Home.module.css'
 export async function getStaticProps(context){
 
 
-  const coffeeStores = await  fetchCoffeeStores();
+const coffeeStores = await  fetchCoffeeStores();
 
 return {
   props: {
@@ -24,6 +25,20 @@ export default function Home(props) {
   
   console.log({latLong});
   console.log({locationErrorMsg});
+ 
+  useEffect(async () =>{
+    if(latLong) {
+      try{
+        const fetchedCoffeeStores = await fetchCoffeeStores(latLong, 30);
+        console.log({fetchedCoffeeStores});
+      }
+      catch(error){
+        // set error
+        console.log({error});
+      }
+    }
+  }, [latLong]);
+
   const handleOnBannerBtnClick = () =>{
     handleTrackLocation();
   }
@@ -40,8 +55,8 @@ export default function Home(props) {
           buttonText={isFindingLocation ? "Locating..." : "View stores nearby"}
           handleOnClick={handleOnBannerBtnClick}
         />
-        
-        {/* Something went wrong : {locationErrorMsg} */}
+
+        {locationErrorMsg && <p>Something went wrong : {locationErrorMsg}</p>}
         <div className={styles.heroImage}>
           <Image
             src="/static/hero-image.png"

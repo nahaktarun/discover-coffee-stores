@@ -1,5 +1,9 @@
 import { useState } from "react"
-
+function round(value, decimals) {
+  return Number(Math.round(value + "e" + decimals) + "e-" + decimals).toFixed(
+    decimals
+  );
+}
 const useTrackLocation = () =>{
     const [ locationErrorMsg, setLocationErrorMsg] = useState('');
     const [latLong, setLatLong] = useState('');
@@ -7,7 +11,7 @@ const useTrackLocation = () =>{
     const success = (position) =>{
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
-        setLatLong(`${latitude}, ${longitude}`);
+        setLatLong(`${round(latitude,2)},${round(longitude,2)}`);
         setLocationErrorMsg('');
         setIsFindingLocation(false);
     }
