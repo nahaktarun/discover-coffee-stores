@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import Image from 'next/image'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Banner from '../components/banner'
 import Card from '../components/card'
 import useTrackLocation from '../hooks/use-track-location'
@@ -23,6 +23,8 @@ export default function Home(props) {
   console.log(props);
   const {handleTrackLocation, latLong, locationErrorMsg, isFindingLocation}  = useTrackLocation();
   
+  const [coffeeStores, setCoffeeStores] = useState('');
+  const [coffeeStoresError, setCoffeeStoreError] = useState(null);
   console.log({latLong});
   console.log({locationErrorMsg});
  
@@ -31,10 +33,12 @@ export default function Home(props) {
       try{
         const fetchedCoffeeStores = await fetchCoffeeStores(latLong, 30);
         console.log({fetchedCoffeeStores});
+        setCoffeeStores(fetchedCoffeeStores);
       }
       catch(error){
         // set error
         console.log({error});
+        setCoffeeStoreError(error.message);
       }
     }
   }, [latLong]);
@@ -57,6 +61,7 @@ export default function Home(props) {
         />
 
         {locationErrorMsg && <p>Something went wrong : {locationErrorMsg}</p>}
+        {coffeeStoresError && <p>Something went wrong : {coffeeStoresError}</p>}
         <div className={styles.heroImage}>
           <Image
             src="/static/hero-image.png"
@@ -65,6 +70,28 @@ export default function Home(props) {
             height={400}
           />
         </div>
+        {coffeeStores.length > 0 && (
+          <div>
+            <h2 className={styles.heading2}>Stores Near me</h2>
+
+            <div className={styles.cardLayout}>
+              {coffeeStores.map((coffeeStore) => {
+                return (
+                  <Card
+                    key={coffeeStore.fsq_id}
+                    name={coffeeStore.name}
+                    imgUrl={
+                      coffeeStore.imageUrl ||
+                      "https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80"
+                    }
+                    href={`/coffee-store/${coffeeStore.fsq_id}`}
+                    className={styles.card}
+                  />
+                );
+              })}
+            </div>
+          </div>
+        )}
         {props.coffeeStores.length > 0 && (
           <div>
             <h2 className={styles.heading2}>Toronto Stores</h2>
