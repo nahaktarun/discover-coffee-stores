@@ -1,11 +1,12 @@
 import Head from 'next/head'
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import Banner from '../components/banner'
 import Card from '../components/card'
 import useTrackLocation from '../hooks/use-track-location'
 import { fetchCoffeeStores } from '../lib/coffee-stores'
 import styles from '../styles/Home.module.css'
+import { ACTION_TYPES, StoreContext } from './_app'
 // import coffeeStoresData from '../data/coffee-store.json';
 export async function getStaticProps(context){
 
@@ -21,19 +22,26 @@ return {
 }
 export default function Home(props) {
   console.log(props);
-  const {handleTrackLocation, latLong, locationErrorMsg, isFindingLocation}  = useTrackLocation();
+  const {handleTrackLocation, locationErrorMsg, isFindingLocation}  = useTrackLocation();
   
-  const [coffeeStores, setCoffeeStores] = useState('');
+  // const [coffeeStores, setCoffeeStores] = useState('');
   const [coffeeStoresError, setCoffeeStoreError] = useState(null);
-  console.log({latLong});
-  console.log({locationErrorMsg});
- 
+  // console.log({latLong});
+  // console.log({locationErrorMsg});
+ const {dispatch, state} = useContext(StoreContext);
+ const {coffeeStores, latLong} = state;
   useEffect(async () =>{
     if(latLong) {
       try{
         const fetchedCoffeeStores = await fetchCoffeeStores(latLong, 30);
         console.log({fetchedCoffeeStores});
-        setCoffeeStores(fetchedCoffeeStores);
+        // setCoffeeStores(fetchedCoffeeStores);
+        dispatch({
+          type:ACTION_TYPES.SET_COFFEE_STORES,
+          payload: {
+            coffeeStores: fetchedCoffeeStores
+          }
+        })
       }
       catch(error){
         // set error
@@ -73,7 +81,7 @@ export default function Home(props) {
 
         {coffeeStores.length > 0 && (
           <div>
-            <h2 className={styles.heading2}>Toronto Stores</h2>
+            <h2 className={styles.heading2}>Stores Near Me</h2>
 
             <div className={styles.cardLayout}>
               {coffeeStores.map((coffeeStore) => {

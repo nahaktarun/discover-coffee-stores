@@ -1,4 +1,5 @@
-import { useState } from "react"
+import { useContext, useState } from "react"
+import { ACTION_TYPES, StoreContext } from "../pages/_app";
 function round(value, decimals) {
   return Number(Math.round(value + "e" + decimals) + "e-" + decimals).toFixed(
     decimals
@@ -6,12 +7,19 @@ function round(value, decimals) {
 }
 const useTrackLocation = () =>{
     const [ locationErrorMsg, setLocationErrorMsg] = useState('');
-    const [latLong, setLatLong] = useState('');
+    // const [latLong, setLatLong] = useState('');
     const [isFindingLocation, setIsFindingLocation] = useState(false);
+    
+    const { dispatch } = useContext(StoreContext);
     const success = (position) =>{
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
-        setLatLong(`${round(latitude,2)},${round(longitude,2)}`);
+        // setLatLong(`${round(latitude,2)},${round(longitude,2)}`);
+
+        dispatch({
+          type: ACTION_TYPES.SET_LAT_LONG,
+          payload: { latLong: `${round(latitude, 2)},${round(longitude, 2)}` },
+        });
         setLocationErrorMsg('');
         setIsFindingLocation(false);
     }
@@ -32,7 +40,7 @@ const useTrackLocation = () =>{
 
     }
     return {
-        latLong,
+      
         handleTrackLocation,
         locationErrorMsg,
         isFindingLocation
