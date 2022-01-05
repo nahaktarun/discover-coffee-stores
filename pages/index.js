@@ -70,9 +70,10 @@ export default function Home(props) {
             height={400}
           />
         </div>
+
         {coffeeStores.length > 0 && (
           <div>
-            <h2 className={styles.heading2}>Stores Near me</h2>
+            <h2 className={styles.heading2}>Toronto Stores</h2>
 
             <div className={styles.cardLayout}>
               {coffeeStores.map((coffeeStore) => {

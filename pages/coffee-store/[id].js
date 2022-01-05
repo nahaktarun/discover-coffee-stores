@@ -10,14 +10,16 @@ import { fetchCoffeeStores } from '../../lib/coffee-stores';
 export async function getStaticProps({params}) {
   
   const coffeeStores = await fetchCoffeeStores();
-
-  return{
-    props: {
-      CoffeeStore: coffeeStores.find(CoffeeStore => {
+  const findCoffeeStoreById = coffeeStores.find((CoffeeStore) => {
         return CoffeeStore.fsq_id.toString() === params.id;
       })
-    }
-  }
+  return {
+    props: {
+      CoffeeStore: findCoffeeStoreById
+        ? findCoffeeStoreById
+        : "4baa31def964a52037523ae3",
+    },
+  };
 }
 
 export async function getStaticPaths () {
@@ -31,7 +33,7 @@ const coffeeStores = await fetchCoffeeStores();
   })
   return {
     paths,
-    fallback: false,
+    fallback: true,
   }
 }
 
@@ -81,7 +83,7 @@ const CoffeeStore = (props) =>{
                 height="24"
                 alt=""
               />
-              <p className={styles.text}>{location.address}</p>
+              <p className={styles.text}>{location.address || ""}</p>
             </div>
             {location.neighborhood && (
               <div className={styles.iconWrapper}>
